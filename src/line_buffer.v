@@ -23,7 +23,7 @@ module line_buffer(
             write_ptr <= write_ptr + 'd1;
     end
 
-    assign pixels_out = {line[read_ptr], line[read_ptr + 1], line[read_ptr + 2]};
+    assign pixels_out = {line[read_ptr], line[(read_ptr + 1) % 256], line[(read_ptr + 2) % 256]};
 
     always @(posedge clk) begin
         if(rst)

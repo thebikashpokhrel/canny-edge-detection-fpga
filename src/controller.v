@@ -3,17 +3,17 @@ module controller(
     input rst,
     input [7:0] pixel_in,
     input pixel_in_valid,
-    output [71:0] pixel_out,
+    output reg [71:0] pixel_out,
     output pixel_out_valid,
     output reg out_intr
 );
 
     reg [7:0] pixel_counter;
-    reg [2:0] current_write_lb;
+    reg [1:0] current_write_lb;
     reg [3:0] lb_data_valid;
     reg [3:0] lb_read_data;
     reg [1:0] current_read_lb;
-    reg [23:0] lb0_pixels_out, lb1_pixels_out, lb2_pixels_out, lb3_pixels_out;
+    wire [23:0] lb0_pixels_out, lb1_pixels_out, lb2_pixels_out, lb3_pixels_out;
     reg [7:0] read_counter;
     reg read_lb;
     reg [9:0] total_pixels_counter;
@@ -39,7 +39,7 @@ module controller(
         if(rst) begin
             rd_state <= IDLE;
             read_lb <= 1'b0;
-            out_intr <= 1'b1;
+            out_intr <= 1'b0;
         end else begin
             case (rd_state)
                 IDLE: begin
@@ -83,11 +83,11 @@ module controller(
         lb_data_valid[current_write_lb] = pixel_in_valid;
     end
 
-    always @(*) begin
+    always @(posedge clk) begin
         if(rst) 
             read_counter <= 0;
         else begin
-            if (lb_read_data)
+            if (read_lb)
                 read_counter <= read_counter + 1;
         end
     end
@@ -110,7 +110,7 @@ module controller(
                 pixel_out = {lb3_pixels_out, lb2_pixels_out, lb1_pixels_out};
             end
             2:begin
-                pixel_out = {lb0_pixels_out, lb3_pixels_out, lb3_pixels_out};
+                pixel_out = {lb0_pixels_out, lb3_pixels_out, lb2_pixels_out};
             end
             3:begin
                 pixel_out = {lb1_pixels_out, lb0_pixels_out, lb3_pixels_out};
@@ -119,6 +119,7 @@ module controller(
     end
 
     always @(*) begin
+        lb_read_data = 4'b0000; 
         case(current_read_lb)
             0:begin
                 lb_read_data[0] = read_lb;
@@ -173,5 +174,14 @@ module controller(
         .pixels_out(lb2_pixels_out),
         .read_data(lb_read_data[2])
     );
-    
+
+    line_buffer lb3 (
+        .clk(clk),
+        .rst(rst),
+        .pixel_in(pixel_in),
+        .in_data_valid(lb_data_valid[3]),
+        .pixels_out(lb3_pixels_out),
+        .read_data(lb_read_data[3])
+    );
+
 endmodule

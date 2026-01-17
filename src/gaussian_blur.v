@@ -24,18 +24,20 @@ module gaussian_blur(
             p20 <= 0; p21 <= 0; p22 <= 0;
             pixel_valid <=0;
 
-        end else if(pixels_in_valid) begin
-            p00 <= pixels_in[71:64];
-            p01 <= pixels_in[63:56];
-            p02 <= pixels_in[55:48];
-            p10 <= pixels_in[47:40];
-            p11 <= pixels_in[39:32];
-            p12 <= pixels_in[31:24];
-            p20 <= pixels_in[23:16];
-            p21 <= pixels_in[15:8];
-            p22 <= pixels_in[7:0];
+        end else begin
+            if(pixels_in_valid) begin
+                p00 <= pixels_in[71:64];
+                p01 <= pixels_in[63:56];
+                p02 <= pixels_in[55:48];
+                p10 <= pixels_in[47:40];
+                p11 <= pixels_in[39:32];
+                p12 <= pixels_in[31:24];
+                p20 <= pixels_in[23:16];
+                p21 <= pixels_in[15:8];
+                p22 <= pixels_in[7:0];
+            end
+            pixel_valid <= pixels_in_valid;
         end
-        pixel_valid <= pixels_in_valid;
     end
 
     // the gaussian kernel is 

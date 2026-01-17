@@ -98,11 +98,11 @@ canny_edge dut(
     //slave
     .pixel_in_valid(image_data_valid),
     .pixel_in(img_data),
-    .pixel_out_ready(1'b1),
+    .pixel_out_ready(),
     //master
     .pixel_out_valid(pixel_out_valid),
     .pixel_out(pixel_out),
-    .pixel_in_ready(),
+    .pixel_in_ready(1'b1),
     //interrupt signal
     .interrupt(intr)
 );
